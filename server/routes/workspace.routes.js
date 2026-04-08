@@ -1,0 +1,12 @@
+const express= require('express');
+const router= express.Router();
+const authMiddleware = require('../middleware/auth.middleware');
+const {isAdmin}= require('../middleware/role.middleware');
+const {createWorkspace,getWorkspaces,addMember,getActivity }=require('../controllers/workspace.controller');
+const { getMembers } = require('../controllers/board.controller');
+router.post('/',authMiddleware, createWorkspace);
+router.get('/', authMiddleware, getWorkspaces);
+router.post('/:workspaceId/members',authMiddleware,isAdmin,addMember);
+router.get('/:workspaceId/members',authMiddleware,isAdmin,getMembers);
+router.get('/:workspaceId/activity',authMiddleware,getActivity);
+module.exports = router; 

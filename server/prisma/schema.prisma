@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  workspaces  Workspace[]
+  memberships WorkspaceMember[]
+  tasks       Task[]
+  activities  Activity[]
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  createdAt DateTime @default(now())
+
+  owner      User              @relation(fields: [ownerId], references: [id])
+  boards     Board[]
+  members    WorkspaceMember[]
+  activities Activity[]
+}
+
+model Board {
+  id          String @id @default(uuid())
+  name        String
+  workspaceId String
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  tasks     Task[]
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  TESTING
+  DONE
+}
+
+model Task {
+  id           String     @id @default(uuid())
+  title        String
+  description  String?
+  status       TaskStatus @default(TODO)
+  boardId      String
+  assignedToId String?
+  createdAt    DateTime   @default(now())
+
+  board       Board        @relation(fields: [boardId], references: [id])
+  assignedTo  User?        @relation(fields: [assignedToId], references: [id])
+  attachments Attachment[]
+}
+
+model WorkspaceMember {
+  id          String    @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        String    @default("MEMBER")
+  user        User      @relation(fields: [userId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@unique([userId, workspaceId])
+}
+
+model Activity {
+  id          String    @id @default(uuid())
+  message     String
+  userId      String
+  workspaceId String
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Attachment {
+  id     String @id @default(uuid())
+  url    String
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id])
+}
