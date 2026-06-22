@@ -108,7 +108,7 @@ function TaskDetailModal({
           {task.attachments?.map((file: any) => (
             <a
               key={file.id}
-              href={`http://localhost:5000/${file.url}`}
+              href={`http://localhost:3000/${file.url}`}
               target="_blank"
               className="text-blue-500 text-xs block"
             >
