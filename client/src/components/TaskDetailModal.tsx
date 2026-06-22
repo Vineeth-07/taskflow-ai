@@ -108,7 +108,7 @@ function TaskDetailModal({
           {task.attachments?.map((file: any) => (
             <a
               key={file.id}
-              href={`http://localhost:3000/${file.url}`}
+              href={`${import.meta.env.VITE_API_URL}/${file.url}`}
               target="_blank"
               className="text-blue-500 text-xs block"
             >
